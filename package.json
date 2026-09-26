@@ -1,0 +1,16 @@
+{
+  "name": "endup-management",
+  "version": "1.0.0",
+  "description": "EndUp Management is a feature-rich Discord moderation and utility bot.",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.2"
+  }
+}
