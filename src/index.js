@@ -1,24 +1,66 @@
-import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import { config } from './config.js';
-import { registerClientEvents } from './events/index.js';
+import { Client } from 'discord.js';
+import {
+  handleButtonInteraction,
+  handleJoinCommand,
+  handleLeaveCommand,
+  handleMessageDeleteCommand,
+  handleMessageUpdateCommand,
+  handlePrefixCommandCustom,
+  handleSelectMenuInteraction,
+  handleSlashCommand,
+  handleVoiceCommand,
+  registerSlashCommands,
+} from '../commands/index.js';
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildModeration,
-    GatewayIntentBits.GuildVoiceStates,
-  ],
-  partials: [Partials.Message, Partials.Channel],
-});
+export function registerClientEvents(client) {
+  client.on('ready', async () => {
+    console.log(`Logged in as ${client.user.tag}`);
+    try {
+      await registerSlashCommands();
+    } catch (error) {
+      console.error('Slash command registration failed:', error.message);
+    }
+  });
 
-registerClientEvents(client);
+  client.on('messageCreate', async (message) => {
+    await handlePrefixCommandCustom(message);
+  });
 
-client.login(config.token).catch((error) => {
-  console.error('Failed to login:', error.message);
-  process.exit(1);
-});
+  client.on('interactionCreate', async (interaction) => {
+    if (interaction.isChatInputCommand()) {
+      await handleSlashCommand(interaction);
+      return;
+    }
 
-export { client };
+    if (interaction.isButton()) {
+      await handleButtonInteraction(interaction);
+      return;
+    }
+
+    if (interaction.isStringSelectMenu()) {
+      await handleSelectMenuInteraction(interaction);
+    }
+  });
+
+  client.on('guildMemberAdd', async (member) => {
+    await handleJoinCommand(member);
+  });
+
+  client.on('guildMemberRemove', async (member) => {
+    await handleLeaveCommand(member);
+  });
+
+  client.on('messageDelete', async (message) => {
+    await handleMessageDeleteCommand(message);
+  });
+
+  client.on('messageUpdate', async (oldMessage, newMessage) => {
+    await handleMessageUpdateCommand(oldMessage, newMessage);
+  });
+
+  client.on('voiceStateUpdate', async (oldState, newState) => {
+    await handleVoiceCommand(oldState, newState);
+  });
+}
+
+export { Client };
