@@ -1,7 +1,17 @@
 import { GatewayIntentBits, Partials } from 'discord.js';
 import { Client } from 'discord.js';
-import { config } from '../config.js';
-import { registerSlashCommands, handleSlashCommand, handlePrefixCommand, handleButtonInteraction, handleSelectMenuInteraction, handleVoiceEvents, handleJoinEvent, handleLeaveEvent, handleMessageDelete, handleMessageUpdate } from './index.js';
+import {
+  registerSlashCommands,
+  handleSlashCommand,
+  handlePrefixCommand,
+  handleButtonInteraction,
+  handleSelectMenuInteraction,
+  handleVoiceEvents,
+  handleJoinEvent,
+  handleLeaveEvent,
+  handleMessageDelete,
+  handleMessageUpdate,
+} from '../commands/index.js';
 
 export function registerClientEvents(client) {
   client.on('ready', async () => {
